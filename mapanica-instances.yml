@@ -1,0 +1,56 @@
+version: '2'
+
+services:
+
+  kraken-ni:
+    image: navitia/kraken:latest
+    environment:
+        - KRAKEN_GENERAL_instance_name=ni
+        - KRAKEN_GENERAL_database=/srv/ed/output/ni.nav.lz4
+        - KRAKEN_BROKER_host=rabbitmq
+    volumes_from:
+      - tyr_beat:ro
+    expose:
+      - "30000"
+
+  kraken-ni-esteli:
+    image: navitia/kraken:latest
+    environment:
+        - KRAKEN_GENERAL_instance_name=ni-esteli
+        - KRAKEN_GENERAL_database=/srv/ed/output/ni-esteli.nav.lz4
+        - KRAKEN_BROKER_host=rabbitmq
+    volumes_from:
+      - tyr_beat:ro
+    expose:
+      - "30000"
+
+  kraken-ni-managua:
+    image: navitia/kraken:latest
+    environment:
+        - KRAKEN_GENERAL_instance_name=ni-managua
+        - KRAKEN_GENERAL_database=/srv/ed/output/ni-managua.nav.lz4
+        - KRAKEN_BROKER_host=rabbitmq
+    volumes_from:
+      - tyr_beat:ro
+    expose:
+      - "30000"
+
+
+  jormungandr:
+    environment:
+
+      - JORMUNGANDR_INSTANCE_ni={"key":"ni","zmq_socket":"tcp://kraken-ni:30000"}
+
+      - JORMUNGANDR_INSTANCE_ni-esteli={"key":"ni-esteli","zmq_socket":"tcp://kraken-ni-esteli:30000"}
+
+      - JORMUNGANDR_INSTANCE_ni-managua={"key":"ni-managua","zmq_socket":"tcp://kraken-ni-managua:30000"}
+
+
+  instances_configurator:
+    environment:
+
+      - INSTANCE_ni=
+
+      - INSTANCE_ni-esteli=
+
+      - INSTANCE_ni-managua=
